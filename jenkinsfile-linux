@@ -12,11 +12,6 @@ pipeline {
 	   steps {
                 echo 'codereview..'
 		sh script: '/opt/apache-maven-3.6.3/bin/mvn -P metrics pmd:pmd'
-           }
-	   post {
-               success {
-		   recordIssues enabledForFailure: true, tool: pmdParser(pattern: '**/target/pmd.xml')
-               }
            }		
         }
         stage('unit-test') {
@@ -45,7 +40,12 @@ pipeline {
 	   steps {
                 echo 'package..'
 		sh script: '/opt/apache-maven-3.6.3/bin/mvn package'	
-           }		
+           }
+	   post {
+               success {
+	           archiveArtifacts artifacts: 'target/*.war'                   
+               }
+           }
         }
     }
 }
